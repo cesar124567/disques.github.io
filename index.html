@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Activos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .form-group > div {
+            margin-right: 20px;
+            margin-bottom: 10px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"], input[type="number"], input[type="date"], select {
+            padding: 5px;
+        }
+        input[readonly] {
+            background-color: #f0f0f0;
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .cancel {
+            background-color: #ff0000;
+            color: white;
+        }
+        .clean {
+            background-color: #ffa500;
+            color: black;
+        }
+        .create {
+            background-color: #90EE90;
+            color: black;
+        }
+        .update {
+            background-color: #ADD8E6;
+            color: black;
+        }
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+        }
+        .barcode {
+            font-family: 'Libre Barcode 39', cursive;
+            font-size: 48px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: Arial, sans-serif;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:nth-child(odd) {
+            background-color: #ffffff;
+        }
+        .highlight {
+            background-color: #90EE90 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>REGISTRO DE ACTIVOS</h1>
+        <div class="form-group">
+            <label>TIPO ACTIVO:</label>
+            <select id="tipoActivo">
+                <option value="Computadora">Computadora</option>
+                <option value="Impresora">Impresora</option>
+                <option value="Mobiliario">Mobiliario</option>
+            </select>
+            <label>SERIE:</label>
+            <input type="text" id="serie" readonly>
+            <label>NÚMERO:</label>
+            <input type="text" id="numero" readonly>
+        </div>
+        <div class="form-group">
+            <label>DESCRIPCIÓN:</label>
+            <input type="text" id="descripcion" style="width: 400px;" placeholder="Laptop Dell Latitude 5590 Core i7">
+        </div>
+        <div class="form-group">
+            <label>DESCRIPCIÓN ADICIONAL:</label>
+            <input type="text" id="descripcionAdicional" style="width: 400px;">
+        </div>
+        <div class="form-group">
+            <label>PROVEEDOR:</label>
+            <select id="proveedor">
+                <option value="Proveedor A">Proveedor A</option>
+                <option value="Proveedor B">Proveedor B</option>
+                <option value="Proveedor C">Proveedor C</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>COSTO:</label>
+            <input type="number" id="costo" placeholder="0" min="0" step="0.01">
+            <label>RESPONSABLE:</label>
+            <select id="responsable">
+                <option value="Empleado 1">Empleado 1</option>
+                <option value="Empleado 2">Empleado 2</option>
+                <option value="Empleado 3">Empleado 3</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>UBICACIÓN:</label>
+            <select id="ubicacion">
+                <option value="Oficina Principal">Oficina Principal</option>
+                <option value="Sucursal A">Sucursal A</option>
+                <option value="Sucursal B">Sucursal B</option>
+            </select>
+            <label>MARCA:</label>
+            <input type="text" id="marca">
+            <label>CANTIDAD:</label>
+            <input type="number" id="cantidad" value="1" min="1">
+        </div>
+        <div class="form-group">
+            <label>MASIVO:</label>
+            <input type="checkbox" id="masivo" onchange="habilitarCantidad()">
+            <label>CONTABLE:</label>
+            <input type="checkbox" id="contable">
+        </div>
+        <div class="buttons">
+            <button class="btn cancel" onclick="cancelar()">CANCELAR</button>
+            <button class="btn clean" onclick="limpiar()">LIMPIAR</button>
+            <button class="btn create" onclick="crear()">CREAR</button>
+            <button class="btn update" onclick="actualizar()">ACTUALIZAR</button>
+        </div>
+
+        <div class="form-group">
+            <label>ESTADO:</label>
+            <input type="text" id="estado" readonly>
+            <label>FECHA CREACIÓN:</label>
+            <input type="date" id="fechaCreacion">
+            <label>FECHA DE FACTURA:</label>
+            <input type="date" id="fechaFactura">
+        </div>
+        
+        <div class="form-group">
+            <button class="btn" onclick="buscarActivo()">Buscar Activo</button>
+            <button class="btn" onclick="anadirImagen()">Añadir Imagen</button>
+            <button class="btn" onclick="verImagen()">Ver Imagen</button>
+        </div>
+
+        <table id="tablaActivos">
+            <thead>
+                <tr>
+                    <th>TIPO ACTIVO</th>
+                    <th>SERIE</th>
+                    <th>NÚMERO</th>
+                    <th>DESCRIPCIÓN</th>
+                    <th>PROVEEDOR</th>
+                    <th>COSTO</th>
+                    <th>RESPONSABLE</th>
+                    <th>UBICACIÓN</th>
+                    <th>MARCA</th>
+                    <th>CANTIDAD</th>
+                    <th>ESTADO</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Filas de datos dinámicos -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let activoCount = 0;
+
+        // Función para habilitar/deshabilitar el campo de cantidad según si se selecciona masivo
+        function habilitarCantidad() {
+            const masivo = document.getElementById('masivo').checked;
+            const cantidad = document.getElementById('cantidad');
+            if (masivo) {
+                cantidad.disabled = false;
+            } else {
+                cantidad.value = 1;
+                cantidad.disabled = true;
+            }
+        }
+
+        // Función para limpiar el formulario
+        function limpiar() {
+            document.querySelectorAll('input').forEach(input => {
+                if (input.type !== 'checkbox') input.value = '';
+                if (input.type === 'checkbox') input.checked = false;
+            });
+            document.getElementById('cantidad').value = 1;
+        }
+
+        // Función para cancelar la operación
+        function cancelar() {
+            alert('Operación cancelada');
+            limpiar();
+        }
+
+        // Función para crear un nuevo registro
+        function crear() {
+            const tipoActivo = document.getElementById('tipoActivo').value;
+            const serie = document.getElementById('serie').value || 'SER-' + (++activoCount).toString().padStart(5, '0');
+            const numero = document.getElementById('numero').value || activoCount;
+            const descripcion = document.getElementById('descripcion').value;
+            const proveedor = document.getElementById('proveedor').value;
+            const costo = document.getElementById('costo').value;
+            const responsable = document.getElementById('responsable').value;
+            const ubicacion = document.getElementById('ubicacion').value;
+            const marca = document.getElementById('marca').value;
+            const cantidad = document.getElementById('cantidad').value;
+            const estado = 'Activo';
+
+            // Agregar a la tabla
+            const tbody = document.getElementById('tablaActivos').querySelector('tbody');
+            const fila = `
+                <tr>
+                    <td>${tipoActivo}</td>
+                    <td>${serie}</td>
+                    <td>${numero}</td>
+                    <td>${descripcion}</td>
+                    <td>${proveedor}</td>
+                    <td>${costo}</td>
+                    <td>${responsable}</td>
+                    <td>${ubicacion}</td>
+                    <td>${marca}</td>
+                    <td>${cantidad}</td>
+                    <td>${estado}</td>
+                </tr>
+            `;
+            tbody.insertAdjacentHTML('beforeend', fila);
+
+            alert(`Se añadirá ${cantidad} activo(s) del tipo "${tipoActivo}".`);
+        }
+
+        function actualizar() {
+            alert('Función de actualización en construcción.');
+        }
+
+        function buscarActivo() {
+            alert('Función de búsqueda en construcción.');
+        }
+
+        function anadirImagen() {
+            alert('Función para añadir imagen en construcción.');
+        }
+
+        function verImagen() {
+            alert('Función para ver imagen en construcción.');
+        }
+    </script>
+</body>
+</html>
